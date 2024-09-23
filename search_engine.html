@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body.light-mode {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #202124;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        body.dark-mode {
+            font-family: Arial, sans-serif;
+            background-color: #202124;
+            color: #e8eaed;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 15vh auto 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body.dark-mode .search-container {
+            background-color: #333;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        body.light-mode h1 {
+            color: #4285f4;
+        }
+
+        body.dark-mode h1 {
+            color: #34a853;
+        }
+
+        .input-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 16px;
+            border: 1px solid #dfe1e5;
+            border-radius: 50px;
+            box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: box-shadow 0.2s, background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode input[type="text"] {
+            background-color: #3c4043;
+            color: #e8eaed;
+            border: 1px solid #5f6368;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        .suggestions {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestions li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .suggestions li:hover {
+            background-color: #f1f3f4;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            font-size: 14px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s, color 0.3s;
+        }
+
+        #searchButton {
+            background-color: #4285f4;
+            color: #fff;
+        }
+
+        #searchButton:hover {
+            background-color: #357ae8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        #clearButton {
+            background-color: #ea4335;
+            color: #fff;
+        }
+
+        #clearButton:hover {
+            background-color: #d93025;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        body.dark-mode button {
+            color: #e8eaed;
+        }
+
+        body.dark-mode #searchButton {
+            background-color: #4285f4;
+        }
+
+        body.dark-mode #searchButton:hover {
+            background-color: #357ae8;
+        }
+
+        body.dark-mode #clearButton {
+            background-color: #ea4335;
+        }
+
+        body.dark-mode #clearButton:hover {
+            background-color: #d93025;
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-container button {
+            padding: 10px;
+            background-color: #4285f4;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-container button:hover {
+            background-color: #357ae8;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .history-container {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode ul li {
+            border-bottom: 1px solid #5f6368;
+        }
+
+        ul li:hover {
+            background-color: #f1f3f4;
+        }
+
+        body.dark-mode ul li:hover {
+            background-color: #5f6368;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <div class="toggle-container">
+        <button id="lightButton"><img src="D:\kya hua bhai.doc\Javascript Intro\sun.png" alt="Light Mode" class="icon"></button>
+        <button id="darkButton"><img src="D:\kya hua bhai.doc\Javascript Intro\moon.png" alt="Dark Mode" class="icon"></button>
+    </div>
+
+    <div class="search-container">
+        <h1>Search</h1>
+        <div class="input-container">
+            <input type="text" id="searchInput" placeholder="Search the web...">
+            <img class="search-icon" src="D:\kya hua bhai.doc\Javascript Intro\search.png" alt="Search Icon">
+            <ul class="suggestions" id="suggestionsList"></ul>
+        </div>
+        <div class="button-container">
+            <button id="searchButton"> Search</button>
+            <button id="clearButton">Clear History</button>
+        </div>
+    </div>
+
+    <div class="history-container">
+        <h2>Search History</h2>
+        <ul id="searchHistory"></ul>
+    </div>
+
+    <script>
+        const keywords = [
+            "Apple", "Amazon", "Austin", // A
+            "Boston", "Barcelona", "Berlin", // B
+            "Chicago", "Charlotte", "Copenhagen", // C
+            "Dallas", "Denver", "Dubai", // D
+            "Edinburgh", "El Paso", "Eugene", // E
+            "Florence", "Frankfurt", "Fresno", // F
+            "Gothenburg", "Glasgow", "Geneva", // G
+            "Helsinki", "Houston", "Hanoi", // H
+            "Istanbul", "Indianapolis", "Irvine", // I
+            "Jacksonville", "Jaipur", "Johannesburg", // J
+            "Kansas City", "Kyoto", "Kolkata", // K
+            "Los Angeles", "London", "Lucknow", // L
+            "Madrid", "Melbourne", "Miami", // M
+            "Nairobi", "New Orleans", "New York", "New Delhi", // N
+            "Oslo", "Orlando", "Ottawa", // O
+            "Paris", "Phoenix", "Prague", // P
+            "Quebec", "Quezon City", "Quito", // Q
+            "Rio de Janeiro", "Rome", "Raleigh", // R
+            "San Francisco", "Seattle", "Singapore", // S
+            "Tokyo", "Toronto", "Tehran", // T
+            "Ulaanbaatar", // U
+            "Vienna", "Vancouver", "Valencia", // V
+            "Warsaw", "Washington", "Wellington", // W
+            "Xiamen", "Xian", // X
+            "Yokohama", "Yerevan", // Y
+            "Zagreb", "Zurich" // Z
+        ];
+
+        const suggestionsList = document.getElementById('suggestionsList');
+        const searchInput = document.getElementById('searchInput');
+        const searchHistoryContainer = document.getElementById('searchHistory');
+        const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+        // Show suggestions based on input
+        searchInput.addEventListener('input', function() {
+            const inputValue = this.value.toLowerCase();
+            suggestionsList.innerHTML = '';
+            if (inputValue) {
+                const filteredKeywords = keywords.filter(keyword => keyword.toLowerCase().includes(inputValue));
+                filteredKeywords.forEach(keyword => {
+                    const li = document.createElement('li');
+                    li.textContent = keyword;
+                    li.onclick = () => selectSuggestion(keyword);
+                    suggestionsList.appendChild(li);
+                });
+                suggestionsList.style.display = filteredKeywords.length > 0 ? 'block' : 'none';
+            } else {
+                suggestionsList.style.display = 'none';
+            }
+        });
+
+        function selectSuggestion(keyword) {
+            searchInput.value = keyword;
+            suggestionsList.innerHTML = '';
+            suggestionsList.style.display = 'none';
+        }
+
+        // Search button functionality
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const query = searchInput.value;
+            if (query) {
+                // Add query to search history
+                searchHistory.push(query);
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                updateSearchHistory();
+                // Redirect to a search results page (you can customize this)
+                alert('Searching for: ' + query);
+            }
+        });
+
+        // Clear history button functionality
+        document.getElementById('clearButton').addEventListener('click', function() {
+            localStorage.removeItem('searchHistory');
+            searchHistory.length = 0; // Clear the array
+            updateSearchHistory();
+        });
+
+        // Update search history display
+        function updateSearchHistory() {
+            searchHistoryContainer.innerHTML = '';
+            searchHistory.forEach(query => {
+                const li = document.createElement('li');
+                li.textContent = query;
+                searchHistoryContainer.appendChild(li);
+            });
+        }
+
+        // Dark/Light mode toggle
+        document.getElementById('lightButton').addEventListener('click', () => {
+            const body = document.body;
+            body.classList.remove('dark-mode');
+            body.classList.add('light-mode');
+        });
+
+        document.getElementById('darkButton').addEventListener('click', () => {
+            const body = document.body;
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+        });
+
+        // Load previous search history
+        updateSearchHistory();
+    </script>
+</body>
+</html>
